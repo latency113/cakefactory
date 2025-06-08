@@ -51,6 +51,11 @@ export const getCakeById = async ({ set, params }: Context<{ params: { id: strin
 
         const remainingMinutes = (new Date(cake.endTime).getTime() - now.getTime()) / 60000;
 
+            if (remainingMinutes <= 0 && cake.status !== 'done' && cake.status !== 'burned') {
+                await cakeService.updateCakeStatus(cake.id, 'burned');
+                cake.status = 'burned';
+            }
+
         return {
             message: "Cake fetched successfully",
             data: {
