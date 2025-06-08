@@ -14,7 +14,8 @@ export const getCakeById = async (id: string) => {
     return await prisma.cakeTask.findUnique({
         where: { id },
         include: {
-            employee: true
+            employee: true,
+            logs:true
         }
     });
 }
