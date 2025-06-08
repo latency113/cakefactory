@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  owner
+  employee
+}
+
+enum CakeStatus {
+  preparing
+  baking
+  done
+  burned
+  undercooked
+}
+
+model Employee {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  role     Role       @default(employee)
+  tasks    CakeTask[]
+}
+
+model CakeTask {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  cakeType         String
+  startTime        DateTime
+  endTime          DateTime
+  estimatedMinutes Int
+  status           CakeStatus @default(preparing)
+  note             String?
+  employee         Employee   @relation(fields: [employeeId], references: [id])
+  employeeId       String     @db.ObjectId
+  logs             WorkLog[]
+}
+
+model WorkLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  action     String
+  timestamp  DateTime @default(now())
+  task       CakeTask @relation(fields: [taskId], references: [id])
+  taskId     String   @db.ObjectId
+}
